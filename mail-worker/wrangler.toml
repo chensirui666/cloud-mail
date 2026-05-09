@@ -34,6 +34,8 @@ crons = ["0 16 * * *"]	#定时任务每天晚上12点执行
 #domain = []				#邮件域名可可配置多个 示例: ["example1.com","example2.com"]
 #admin = ""				#管理员的邮箱	示例: admin@example.com
 #jwt_secret = ""			#jwt令牌的密钥,随便填一串字符串
+#GMAIL_WEBHOOK_URL = ""		#Gmail 项目的公网地址 示例: https://your-app.vercel.app
+#GMAIL_WEBHOOK_SECRET = ""	#与 Gmail 项目 .env 中 EMAIL_WEBHOOK_SECRET 保持一致
 
 [build]
 command = "pnpm --prefix ../mail-vue install && pnpm --prefix ../mail-vue run build"

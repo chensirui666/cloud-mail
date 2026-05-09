@@ -131,6 +131,26 @@ export async function email(message, env, ctx) {
 
 		emailRow = await emailService.completeReceive({ env }, account ? emailConst.status.RECEIVE : emailConst.status.NOONE, emailRow.emailId);
 
+		// 转发到 Gmail 项目 webhook（异步，不阻塞主流程）
+		if (env.GMAIL_WEBHOOK_URL && env.GMAIL_WEBHOOK_SECRET) {
+			ctx.waitUntil(
+				fetch(`${env.GMAIL_WEBHOOK_URL}/api/email/receive`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'x-webhook-secret': env.GMAIL_WEBHOOK_SECRET,
+					},
+					body: JSON.stringify({
+						messageId: params.messageId || String(emailRow.emailId),
+						from: params.sendEmail,
+						subject: params.subject || '',
+						body: params.text || '',
+						recipientEmail: params.toEmail,
+						receivedAt: new Date().toISOString(),
+					}),
+				}).catch(e => console.error('Gmail webhook 转发失败:', e))
+			);
+		}
 
 		if (ruleType === settingConst.ruleType.RULE) {
 
